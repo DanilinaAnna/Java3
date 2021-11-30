@@ -26,7 +26,7 @@ public class BaseAuthService  implements AuthService  {
                 if (rs.getString("name").equals(newNick) ) return false;
             }
 
-            stmt.executeUpdate("UPDATE students SET name  = '" + newNick + "' WHERE name = '" + c.getName() + "';");
+            stmt.executeUpdate("UPDATE students SET name  = '" + newNick + "' WHERE name like( '" + c.getName() + "');");
             connection.commit();
 
             return true;
