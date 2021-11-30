@@ -18,15 +18,19 @@ public class BaseAuthService  implements AuthService  {
     public boolean changeNick(ClientHandler c, String newNick) {
 
 
+
         try {
             connect();
+
             ResultSet rs = stmt.executeQuery("SELECT name FROM students");
             ResultSetMetaData rsmd = rs.getMetaData();
             while (rs.next()) {
                 if (rs.getString("name").equals(newNick) ) return false;
             }
-
-            stmt.executeUpdate("UPDATE students SET name  = '" + newNick + "' WHERE name like( '" + c.getName() + "');");
+            final PreparedStatement ps = connection.prepareStatement("UPDATE students SET name  = ? WHERE name = ?");
+            ps.setString(1, newNick);
+            ps.setString(2,c.getName());
+            ps.executeUpdate();
             connection.commit();
 
             return true;
