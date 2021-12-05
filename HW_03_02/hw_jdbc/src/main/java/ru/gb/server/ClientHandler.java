@@ -2,6 +2,7 @@ package javacore03_02.server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 
 
 public class ClientHandler {
@@ -10,17 +11,19 @@ public class ClientHandler {
     private DataInputStream in;
     private DataOutputStream out;
     private String name;
+    ExecutorService executorService;
     BufferedWriter writer;
 
-    public ClientHandler(Server server, Socket socket) {
+    public ClientHandler(Server server, Socket socket, ExecutorService executorService) {
         try {
             this.server = server;
             this.socket = socket;
+            this.executorService = executorService;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             this.name = "";
             this.writer = null;
-            new Thread(() -> {
+            executorService.execute(() -> {
                 try {
                     while (true) {
                         String str = in.readUTF();
@@ -79,7 +82,7 @@ public class ClientHandler {
                         e.printStackTrace();
                     }
                 }
-            }).start();
+            });
 
            } catch (IOException e) {
             e.printStackTrace();

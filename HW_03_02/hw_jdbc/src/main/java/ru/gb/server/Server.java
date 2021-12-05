@@ -1,10 +1,11 @@
-package ru.gb.server;
+package javacore03_02.server;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 public class Server {
@@ -12,6 +13,8 @@ public class Server {
     private ServerSocket server;
     private Vector<ClientHandler> clients;
     private AuthService authService;
+    private ExecutorService executorService;
+
 
     public Server() {
         try {
@@ -20,11 +23,12 @@ public class Server {
             authService = new BaseAuthService();
             authService.start();
             clients = new Vector<>();
+            executorService = Executors.newCachedThreadPool();
             while (true) {
                 System.out.println("Сервер ожидает подключения");
                 socket = server.accept();
                 System.out.println("Клиент подключился");
-                new ClientHandler(this, socket);
+                new ClientHandler(this, socket,executorService);
             }
         } catch (IOException e) {
             System.out.println("Ошибка при работе сервера");
@@ -35,6 +39,7 @@ public class Server {
                 e.printStackTrace();
             }
             authService.stop();
+            executorService.shutdownNow();
         }
     }
 
