@@ -1,5 +1,8 @@
 package server;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +17,7 @@ public class ClientHandler {
     ExecutorService executorService;
     BufferedWriter writer;
 
-    public ClientHandler(Server server, Socket socket, ExecutorService executorService) {
+    public ClientHandler(Server server, Socket socket, ExecutorService executorService, Logger logger) {
         try {
             this.server = server;
             this.socket = socket;
@@ -47,7 +50,10 @@ public class ClientHandler {
                     writer = new BufferedWriter(new FileWriter("demo.txt", true));
                     while (true) {
                         String str = in.readUTF();
-                        System.out.println("from " + name + ": " + str);
+
+                        // ЛОГИРОВАНИЕ
+                        logger.log(Level.INFO,"from " + name + ": " + str);
+                       //System.out.println("from " + name + ": " + str);
                         if (str.startsWith("/")) {
                             if (str.equals("/end")) break;
                             if (str.startsWith("/w ")) {
