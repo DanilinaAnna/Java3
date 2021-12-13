@@ -7,6 +7,10 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class Server {
     private final int PORT = 8189;
@@ -14,6 +18,7 @@ public class Server {
     private Vector<ClientHandler> clients;
     private AuthService authService;
     private ExecutorService executorService;
+    private static final Logger logger = LogManager.getLogger(Server.class.getName());
 
 
     public Server() {
@@ -25,13 +30,17 @@ public class Server {
             clients = new Vector<>();
             executorService = Executors.newCachedThreadPool();
             while (true) {
-                System.out.println("Сервер ожидает подключения");
+                logger.log(Level.INFO, "Сервер ожидает подключения");
+               // System.out.println("Сервер ожидает подключения");
                 socket = server.accept();
-                System.out.println("Клиент подключился");
-                new ClientHandler(this, socket,executorService);
+                logger.log(Level.INFO, "Клиент подключился");
+                //System.out.println("Клиент подключился");
+
+                new ClientHandler(this, socket,executorService, logger);
             }
         } catch (IOException e) {
-            System.out.println("Ошибка при работе сервера");
+            logger.log(Level.ERROR, "Ошибка при работе сервера");
+          // System.out.println("Ошибка при работе сервера");
         } finally {
             try {
                 server.close();
